@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{_layout.html :: header(~{::title},_,_)}">
+    <title th:text="${plat.nom}">Détail du Plat</title>
+</head>
+<body>
+    <nav th:replace="~{_layout.html :: menu}"></nav>
+    <div class="container py-4">
+        <div class="row mb-4">
+            <div class="col">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/plats}">Plats</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" th:text="${plat.nom}">Nom du plat</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h1 class="h3 mb-0">
+                                <i class="fas fa-utensils me-2"></i>
+                                <span th:text="${plat.nom}">Nom du plat</span>
+                            </h1>
+                            <span class="badge bg-light text-primary">
+                                <i class="fas fa-tag me-1"></i>
+                                <span th:text="${plat.categorie.nom}">Catégorie</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <!-- Valeurs nutritionnelles -->
+                            <div class="col-12">
+                                <h4 class="text-primary mb-3">
+                                    <i class="fas fa-chart-pie me-2"></i>
+                                    Valeurs nutritionnelles
+                                </h4>
+                                <div class="row g-3">
+                                    <div class="col-md-6 col-lg-3">
+                                        <div class="card h-100 bg-danger bg-opacity-10 border-danger">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-fire fa-2x text-danger mb-2"></i>
+                                                <h5 class="card-title">Calories</h5>
+                                                <p class="card-text h4" th:text="${plat.nbCalories}">0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <div class="card h-100 bg-warning bg-opacity-10 border-warning">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-cookie fa-2x text-warning mb-2"></i>
+                                                <h5 class="card-title">Glucides</h5>
+                                                <p class="card-text h4" th:text="${plat.nbGlucides} + ' g'">0 g</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <div class="card h-100 bg-info bg-opacity-10 border-info">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-oil-can fa-2x text-info mb-2"></i>
+                                                <h5 class="card-title">Lipides</h5>
+                                                <p class="card-text h4" th:text="${plat.nbLipides} + ' g'">0 g</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <div class="card h-100 bg-success bg-opacity-10 border-success">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-dumbbell fa-2x text-success mb-2"></i>
+                                                <h5 class="card-title">Protéines</h5>
+                                                <p class="card-text h4" th:text="${plat.nbProteines} + ' g'">0 g</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Graphique en anneau -->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <canvas id="nutritionChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <a th:href="@{'/plats'(page=${page}, size=${size}, motCle=${motCle})}" 
+                                   class="btn btn-secondary ms-2">
+                                    <i class="fas fa-arrow-left me-1"></i> Retour
+                                </a>
+                                <a th:href="@{'/platEdit'(id=${plat.id}, page=${page}, size=${size}, mc=${motCle})}" 
+                                   class="btn btn-warning">
+                                    <i class="fas fa-edit me-1"></i> Modifier
+                                </a>
+                            </div>
+                            <button class="btn btn-danger" 
+                                    onclick="if(confirm('Voulez-vous vraiment supprimer ce plat ?')) { 
+                                        window.location.href=`[[@{'/platDelete'(id=${plat.id}, page=${page}, size=${size}, motCle=${motCle}, categorieId=${categorieId}, minCalories=${minCalories}, maxCalories=${maxCalories})}]]`; 
+                                    }">
+                                <i class="fas fa-trash me-1"></i> Supprimer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        // Données du graphique
+        const nutritionData = {
+            labels: ['Glucides', 'Lipides', 'Protéines'],
+            datasets: [{
+                data: [
+                    /*[[${plat.nbGlucides}]]*/,
+                    /*[[${plat.nbLipides}]]*/,
+                    /*[[${plat.nbProteines}]]*/
+                ],
+
+                backgroundColor: [
+                    'rgba(255, 193, 7, 0.8)',  // Warning (Glucides)
+                    'rgba(23, 162, 184, 0.8)',  // Info (Lipides)
+                    'rgba(40, 167, 69, 0.8)'    // Success (Protéines)
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        // Configuration du graphique
+        const config = {
+            type: 'doughnut',
+            data: nutritionData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Répartition des nutriments (en grammes)'
+                    }
+                }
+            }
+        };
+
+        // Création du graphique
+        new Chart(document.getElementById('nutritionChart'), config);
+    </script>
+</body>
+</html>

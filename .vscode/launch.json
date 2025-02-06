@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-Prjspring2025Application<prjspring2025>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "fr.iut.prjspring2025.Prjspring2025Application",
+            "projectName": "prjspring2025",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

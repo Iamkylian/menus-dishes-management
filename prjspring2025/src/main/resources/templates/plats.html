@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{_layout.html :: header(~{::title}, _, _)}">
+    <title>Liste des Plats</title>
+</head>
+<body>
+
+    <nav th:replace="~{_layout.html :: menu}"></nav>
+    <div class="container py-4">
+        <!-- En-tête -->
+                <div class="alert alert-dismissible alert-success alert-floating" th:if="${action=='new' || action=='mod'}" >
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <p th:if="${action=='new'}">
+                        Le plat <strong th:text="${plat.nom}" /> a bien été créé
+                    </p>
+                    <p th:if="${action=='mod'}">
+                        Le plat <strong th:text="${plat.nom}" /> a bien été modifié
+                    </p>
+                </div>
+                <div class="alert alert-dismissible alert-warning alert-floating" th:if="${action=='del'}" >
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    Le plat a bien été supprimé
+                </div>
+        <div class="row mb-4">
+            <div class="col">
+                <h1 class="text-primary text-center">Les Plats</h1>
+                <hr class="w-25 mx-auto">
+            </div>
+        </div>
+
+        <!-- Bouton Nouveau Plat -->
+        <div class="row mb-4">
+            <div class="col text-center">
+                <a th:href="@{'/platEdit'(page=${page.number}, size=${page.size}, mc=${motCle})}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Nouveau Plat
+                </a>
+            </div>
+        </div>
+
+        <!-- Formulaire de filtrage avancé -->
+        <div class="row mb-4">
+            <div class="col-md-10 mx-auto">
+                <form th:action="@{/plats}" method="get">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label for="mc" class="form-label">Recherche</label>
+                            <input type="text" id="mc" name="motCle" class="form-control" placeholder="Nom du plat" th:value="${motCle}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="categorieId" class="form-label">Catégorie</label>
+                            <select id="categorieId" name="categorieId" class="form-select">
+                                <option value="">-- Toutes --</option>
+                                <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.nom}" th:selected="${cat.id} == ${categorieId}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="minCalories" class="form-label">Calories min</label>
+                            <input type="number" id="minCalories" name="minCalories" class="form-control" th:value="${minCalories}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="maxCalories" class="form-label">Calories max</label>
+                            <input type="number" id="maxCalories" name="maxCalories" class="form-control" th:value="${maxCalories}">
+                        </div>
+                        <div class="col-md-12 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">Filtrer</button>
+                            <a th:href="@{/plats}" class="btn btn-secondary ms-2">Réinitialiser</a>
+                        </div>
+                    </div>
+                    <input type="hidden" name="page" th:value="${page.number}">
+                    <input type="hidden" name="size" th:value="${page.size}">
+                </form>
+            </div>
+        </div>
+
+        <!-- Tableau listant les plats -->
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <table class="table table-hover">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>#</th>
+                            <th>
+                                <a th:href="@{/plats(page=${page.number}, size=${page.size}, motCle=${motCle}, categorieId=${categorieId}, minCalories=${minCalories}, maxCalories=${maxCalories}, sort=${sort=='nomAsc' ? 'nomDesc' : 'nomAsc'})}" class="text-white text-decoration-none">
+                                    Nom
+                                    <i th:if="${sort == 'nomAsc'}" class="fas fa-sort-up"></i>
+                                    <i th:if="${sort == 'nomDesc'}" class="fas fa-sort-down"></i>
+                                    <i th:if="${sort != 'nomAsc' and sort != 'nomDesc'}" class="fas fa-sort"></i>
+                                </a>
+                            </th>
+                            <th>
+                                <a th:href="@{/plats(page=${page.number}, size=${page.size}, motCle=${motCle}, categorieId=${categorieId}, minCalories=${minCalories}, maxCalories=${maxCalories}, sort=${sort=='catAsc' ? 'catDesc' : 'catAsc'})}" class="text-white text-decoration-none">
+                                    Catégorie
+                                    <i th:if="${sort == 'catAsc'}" class="fas fa-sort-up"></i>
+                                    <i th:if="${sort == 'catDesc'}" class="fas fa-sort-down"></i>
+                                    <i th:if="${sort != 'catAsc' and sort != 'catDesc'}" class="fas fa-sort"></i>
+                                </a>
+                            </th>
+                            <th>
+                                <a th:href="@{/plats(page=${page.number}, size=${page.size}, motCle=${motCle}, categorieId=${categorieId}, minCalories=${minCalories}, maxCalories=${maxCalories}, sort=${sort=='calAsc' ? 'calDesc' : 'calAsc'})}" class="text-white text-decoration-none">
+                                    Calories
+                                    <i th:if="${sort == 'calAsc'}" class="fas fa-sort-up"></i>
+                                    <i th:if="${sort == 'calDesc'}" class="fas fa-sort-down"></i>
+                                    <i th:if="${sort != 'calAsc' and sort != 'calDesc'}" class="fas fa-sort"></i>
+                                </a>
+                            </th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="plat : ${plats}">
+                            <td th:text="${plat.id}">1</td>
+                            <td th:text="${plat.nom}">Nom du plat</td>
+                            <td th:text="${plat.categorie.nom}">Catégorie</td>
+                            <td th:text="${plat.nbCalories}">0</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a class="btn btn-warning btn-sm" th:href="@{'/platEdit'(id=${plat.id}, page=${page.number}, size=${page.size}, mc=${motCle})}">
+                                        <i class="fas fa-edit"></i> Éditer
+                                    </a>
+
+                                    <a class="btn btn-danger btn-sm" 
+                                       th:href="@{'/platDelete'(id=${plat.id}, page=${page.number}, size=${page.size}, motCle=${motCle}, categorieId=${categorieId}, minCalories=${minCalories}, maxCalories=${maxCalories})}" 
+                                       onclick="return confirm('Voulez-vous vraiment supprimer ce plat ?');">
+                                        <i class="fas fa-trash"></i> Supprimer
+                                    </a>
+
+                                    <a class="btn btn-info btn-sm" th:href="@{'/platDetail/' + ${plat.id}(page=${page.number}, size=${page.size}, mc=${motCle})}">
+                                        <i class="fas fa-eye"></i> Détails
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-3">
+            <div class="row" th:if="${page.totalPages > 1}">
+                <nav aria-label="Pagination">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${page.first ? ' disabled' : ''}">
+                            <a class="page-link" th:href="@{/plats(page=${page.number - 1}, size=${page.size}, motCle=${motCle}, categorieId=${categorieId}, minCalories=${minCalories}, maxCalories=${maxCalories}, sort=${sort})}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${i == page.number ? ' active' : ''}">
+                            <a class="page-link" th:href="@{/plats(page=${i}, size=${page.size}, motCle=${motCle}, categorieId=${categorieId}, minCalories=${minCalories}, maxCalories=${maxCalories}, sort=${sort})}">
+                                <span th:text="${i + 1}"></span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${page.last ? ' disabled' : ''}">
+                            <a class="page-link" th:href="@{/plats(page=${page.number + 1}, size=${page.size}, motCle=${motCle}, categorieId=${categorieId}, minCalories=${minCalories}, maxCalories=${maxCalories}, sort=${sort})}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Sélection de la taille des pages -->
+            <form th:action="@{/plats}" method="get">
+                <div class="form-group">
+                    <label for="size">Plats par page</label>
+                    <select id="size" name="size" onchange="this.form.submit()">
+                        <option value="5" th:selected="${page.size == 5}">5</option>
+                        <option value="10" th:selected="${page.size == 10}">10</option>
+                        <option value="15" th:selected="${page.size == 15}">15</option>
+                        <option value="20" th:selected="${page.size == 20}">20</option>
+                        <option value="25" th:selected="${page.size == 25}">25</option>
+                        <option value="30" th:selected="${page.size == 30}">30</option>
+                        <option value="35" th:selected="${page.size == 35}">35</option>
+                        <option value="40" th:selected="${page.size == 40}">40</option>
+                        <option value="45" th:selected="${page.size == 45}">45</option>
+                        <option value="50" th:selected="${page.size == 50}">50</option>
+                    </select>
+                </div>
+                <input type="hidden" name="page" th:value="${page.number}">
+                <input type="hidden" name="motCle" th:value="${motCle}">
+                <input type="hidden" name="categorieId" th:value="${categorieId}">
+                <input type="hidden" name="minCalories" th:value="${minCalories}">
+                <input type="hidden" name="maxCalories" th:value="${maxCalories}">
+                <input type="hidden" name="sort" th:value="${sort}">
+            </form>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{_layout.html :: header(~{::title}, _, _)}">
+    <meta charset="UTF-8">
+    <title>Accueil</title>
+</head>
+<body>
+    <nav th:replace="~{_layout.html :: menu}"></nav>
+
+    <div class="container mt-4">
+        <!-- Section d'accueil principale -->
+        <div class="p-5 mb-4 bg-light rounded-3">
+            <div class="container-fluid py-5">
+                <h1 class="display-5 fw-bold">Bienvenue dans le Restaurant Manager</h1>
+                <p class="col-md-8 fs-4">Personnalisez vos menus et explorez une sélection de plats savoureux.</p>
+                <a class="btn btn-primary btn-lg" href="/menus" role="button">Voir les Menus</a>
+                <a class="btn btn-secondary btn-lg ms-2" href="/plats" role="button">Voir les Plats</a>
+            </div>
+        </div>
+        
+        <!-- Cartes avec les menus et les plats -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <img th:src="@{/menu.jpg}" class="card-img-top" alt="Menus" style="width: 100%; height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">Gérez vos Menus</h5>
+                        <p class="card-text">Créez, modifiez et supprimez des menus adaptés à toutes les envies et occasions.</p>
+                        <a href="/menus" class="btn btn-primary">Accéder aux Menus</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <img th:src="@{/plat.jpg}" class="card-img-top" alt="Plats" style="width: 100%; height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">Découvrez les Plats</h5>
+                        <p class="card-text">Explorez une variété de plats détaillés pour composer les meilleurs menus.</p>
+                        <a href="/plats" class="btn btn-secondary">Accéder aux Plats</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

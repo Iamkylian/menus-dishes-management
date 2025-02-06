@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{_layout.html :: header(~{::title},_,_)}">
+    <title th:text="${menu.id != null and menu.id > 0 ? 'Éditer un Menu' : 'Nouveau Menu'}">Gestion Menu</title>
+</head>
+<body>
+    <nav th:replace="~{_layout.html :: menu}"></nav>
+    <div class="container py-4">
+        <div class="row mb-4">
+            <div class="col">
+                <h1 class="text-primary text-center" th:text="${menu.id != null and menu.id > 0 ? 'Édition du Menu' : 'Nouveau Menu'}"></h1>
+                <hr class="w-25 mx-auto">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0">Filtres des plats</h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/edit}" method="get">
+                            <input type="hidden" name="id" th:value="${menu.id != null ? menu.id : 0}">
+                            <input type="hidden" name="page" th:value="${page}">
+                            <input type="hidden" name="size" th:value="${size}">
+                            <input type="hidden" name="filtre" th:value="${filtre}">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="categorie" class="form-label">Catégorie</label>
+                                    <select id="categorie" name="categorieId" class="form-select">
+                                        <option value="" th:selected="${categorieId == null}">-- Toutes --</option>
+                                        <option th:each="cat : ${categories}"
+                                                th:value="${cat.id}"
+                                                th:text="${cat.nom}"
+                                                th:selected="${cat.id == categorieId}"></option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <label for="minCalories" class="form-label">Calories min</label>
+                                    <input type="number" id="minCalories" name="minCalories" class="form-control" th:value="${minCalories}">
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <label for="maxCalories" class="form-label">Calories max</label>
+                                    <input type="number" id="maxCalories" name="maxCalories" class="form-control" th:value="${maxCalories}">
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn btn-primary w-100">Filtrer les plats</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <a th:href="@{/edit(id=${menu.id != null ? menu.id : 0}, page=${page}, size=${size}, filtre='', categorieId='', minCalories='', maxCalories='')}" class="btn btn-secondary w-100">Réinitialiser filtre</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <form th:action="@{/menus/save}" method="post" th:object="${menu}">
+                    <input type="hidden" name="page" th:value="${page}">
+                    <input type="hidden" name="size" th:value="${size}">
+                    <input type="hidden" name="filtre" th:value="${filtre}">
+                    <input type="hidden" th:field="*{id}">
+                    <div class="form-group mb-3">
+                        <label for="nom">Nom</label>
+                        <input type="text" id="nom" class="form-control" th:field="*{nom}" placeholder="Nom du menu">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="description">Description</label>
+                        <textarea id="description" class="form-control" th:field="*{description}" rows="3" placeholder="Description"></textarea>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="prix">Prix</label>
+                        <input type="number" step="0.01" id="prix" class="form-control" th:field="*{prix}" placeholder="Prix">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h3>Plats disponibles</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div id="availablePlatsList" class="list-group" style="max-height: 400px; overflow-y: auto;">
+                                        <div th:each="plat : ${plats}" th:if="${!menu.plats.contains(plat)}"
+                                             class="list-group-item d-flex justify-content-between align-items-start"
+                                             th:attr="data-id=${plat.id}, data-calories=${plat.nbCalories}, data-glucides=${plat.nbGlucides}, data-lipides=${plat.nbLipides}, data-proteines=${plat.nbProteines}">
+                                            <div class="ms-2 me-auto">
+                                                <div class="fw-bold" th:text="${plat.nom}">Nom du plat</div>
+                                                <div>
+                                                    <span class="badge bg-info me-1" th:text="'Catégorie : ' + ${plat.categorie.nom}">Catégorie</span>
+                                                    <span class="badge bg-danger me-1" th:text="'Calories : ' + ${plat.nbCalories}">Calories</span>
+                                                    <span class="badge bg-warning me-1" th:text="'Glucides : ' + ${plat.nbGlucides}">Glucides</span>
+                                                    <span class="badge bg-secondary me-1" th:text="'Lipides : ' + ${plat.nbLipides}">Lipides</span>
+                                                    <span class="badge bg-success me-1" th:text="'Protéines : ' + ${plat.nbProteines}">Protéines</span>
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="ajouterPlat(this)">Ajouter</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h3>Plats sélectionnés</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div id="selectedPlatsList" class="list-group" style="max-height: 400px; overflow-y: auto;">
+                                        <div th:each="plat : ${menu.plats}"
+                                             class="list-group-item d-flex justify-content-between align-items-start"
+                                             th:attr="data-id=${plat.id}, data-calories=${plat.nbCalories}, data-glucides=${plat.nbGlucides}, data-lipides=${plat.nbLipides}, data-proteines=${plat.nbProteines}">
+                                            <div class="ms-2 me-auto">
+                                                <div class="fw-bold" th:text="${plat.nom}">Nom du plat</div>
+                                                <div>
+                                                    <span class="badge bg-info me-1" th:text="'Catégorie : ' + ${plat.categorie.nom}">Catégorie</span>
+                                                    <span class="badge bg-danger me-1" th:text="'Calories : ' + ${plat.nbCalories}">Calories</span>
+                                                    <span class="badge bg-warning me-1" th:text="'Glucides : ' + ${plat.nbGlucides}">Glucides</span>
+                                                    <span class="badge bg-secondary me-1" th:text="'Lipides : ' + ${plat.nbLipides}">Lipides</span>
+                                                    <span class="badge bg-success me-1" th:text="'Protéines : ' + ${plat.nbProteines}">Protéines</span>
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="retirerPlat(this)">Retirer</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-3 bg-light">
+                        <div class="card-body">
+                            <p class="text-center mb-0 fs-5">Total de plats sélectionnés: <span id="totalPlats" class="fw-bold">0</span></p>
+                            <p class="text-center mb-0 fs-5">Total des calories: <span id="totalCalories" class="fw-bold">0</span></p>
+                            <p class="text-center mb-0 fs-5">Total des lipides: <span id="totalLipides" class="fw-bold">0</span></p>
+                        </div>
+                    </div>
+                    <div id="hiddenPlatInputs"></div>
+                    <div class="form-group mt-3">
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <a th:href="@{'/menus'(page=${page}, size=${size}, filtre=${filtre})}" class="btn btn-secondary">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        function updateTotals() {
+            var selectedItems = document.querySelectorAll('#selectedPlatsList .list-group-item');
+            var totalPlats = selectedItems.length;
+            var totalCalories = 0;
+            var totalLipides = 0;
+            selectedItems.forEach(function(item) {
+                var calories = parseInt(item.getAttribute('data-calories'));
+                var lipides = parseInt(item.getAttribute('data-lipides'));
+                totalCalories += calories;
+                totalLipides += lipides;
+            });
+            document.getElementById('totalPlats').innerText = totalPlats;
+            document.getElementById('totalCalories').innerText = totalCalories;
+            document.getElementById('totalLipides').innerText = totalLipides;
+            updateHiddenInputs();
+        }
+
+        function updateHiddenInputs() {
+            var container = document.getElementById('hiddenPlatInputs');
+            container.innerHTML = '';
+            var selectedItems = document.querySelectorAll('#selectedPlatsList .list-group-item');
+            selectedItems.forEach(function(item) {
+                var id = item.getAttribute('data-id');
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'platIds';
+                input.value = id;
+                container.appendChild(input);
+            });
+        }
+
+        function ajouterPlat(button) {
+            var item = button.closest('.list-group-item');
+            button.classList.remove('btn-outline-primary');
+            button.classList.add('btn-outline-danger');
+            button.innerText = 'Retirer';
+            button.setAttribute('onclick', 'retirerPlat(this)');
+            item.parentNode.removeChild(item);
+            document.getElementById('selectedPlatsList').appendChild(item);
+            updateTotals();
+        }
+
+        function retirerPlat(button) {
+            var item = button.closest('.list-group-item');
+            button.classList.remove('btn-outline-danger');
+            button.classList.add('btn-outline-primary');
+            button.innerText = 'Ajouter';
+            button.setAttribute('onclick', 'ajouterPlat(this)');
+            item.parentNode.removeChild(item);
+            document.getElementById('availablePlatsList').appendChild(item);
+            updateTotals();
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            updateTotals();
+        });
+    </script>
+</body>
+</html>

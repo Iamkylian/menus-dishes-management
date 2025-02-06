@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{_layout.html :: header(~{::title},_,_)}">
+    <title th:text="${menu.nom}">Détail du Menu</title>
+</head>
+<body>
+    <nav th:replace="~{_layout.html :: menu}"></nav>
+    <div class="container py-4">
+        <div class="row mb-4">
+            <div class="col">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/menus}">Menus</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" th:text="${menu.nom}">Nom du menu</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card shadow-sm">
+                    <!-- En-tête du menu -->
+                    <div class="card-header bg-primary text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h1 class="h3 mb-0">
+                                <i class="fas fa-clipboard-list me-2"></i>
+                                <span th:text="${menu.nom}">Nom du menu</span>
+                            </h1>
+                            <span class="badge bg-light text-primary">
+                                <i class="fas fa-euro-sign me-1"></i>
+                                <span th:text="${#numbers.formatDecimal(menu.prix, 1, 2)} + ' €'">0.00 €</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <!-- Description du menu -->
+                        <div class="mb-4">
+                            <h4 class="text-primary mb-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Description
+                            </h4>
+                            <p class="lead" th:text="${menu.description}">Description du menu</p>
+                        </div>
+
+                        <!-- Statistiques du menu -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <div class="card h-100 bg-primary bg-opacity-10 border-primary">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-list-ol fa-2x text-primary mb-2"></i>
+                                        <h5 class="card-title">Plats</h5>
+                                        <p class="card-text h4" th:text="${menu.plats.size()}">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100 bg-danger bg-opacity-10 border-danger">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-fire fa-2x text-danger mb-2"></i>
+                                        <h5 class="card-title">Calories</h5>
+                                        <p class="card-text h4" th:text="${menu.totalCalories}">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100 bg-warning bg-opacity-10 border-warning">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-cookie fa-2x text-warning mb-2"></i>
+                                        <h5 class="card-title">Glucides</h5>
+                                        <p class="card-text h4" th:text="${menu.totalGlucides} + ' g'">0 g</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100 bg-info bg-opacity-10 border-info">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-oil-can fa-2x text-info mb-2"></i>
+                                        <h5 class="card-title">Lipides</h5>
+                                        <p class="card-text h4" th:text="${menu.totalLipides} + ' g'">0 g</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100 bg-success bg-opacity-10 border-success">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-dumbbell fa-2x text-success mb-2"></i>
+                                        <h5 class="card-title">Protéines</h5>
+                                        <p class="card-text h4" th:text="${menu.totalProteines} + ' g'">0 g</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Liste des plats -->
+                        <div class="mb-4">
+                            <h4 class="text-primary mb-3">
+                                <i class="fas fa-utensils me-2"></i>
+                                Composition du menu
+                            </h4>
+                            <div class="list-group" style="max-height: 400px; overflow-y: auto;">
+                                <div th:each="plat : ${menu.plats}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1" th:text="${plat.nom}">Nom du plat</h5>
+                                        <small class="text-muted" th:text="${plat.categorie.nom}">Catégorie</small>
+                                    </div>
+                                    <div class="mt-2">
+                                        <span class="badge bg-danger me-1" th:text="'Calories : ' + ${plat.nbCalories}">Calories</span>
+                                        <span class="badge bg-warning me-1" th:text="'Glucides : ' + ${plat.nbGlucides} + 'g'">Glucides</span>
+                                        <span class="badge bg-info me-1" th:text="'Lipides : ' + ${plat.nbLipides} + 'g'">Lipides</span>
+                                        <span class="badge bg-success me-1" th:text="'Protéines : ' + ${plat.nbProteines} + 'g'">Protéines</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Graphique -->
+                        <div class="card">
+                            <div class="card-body">
+                                <canvas id="nutritionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <a th:href="@{'/menus'(page=${page}, size=${size}, filtre=${filtre})}" 
+                                   class="btn btn-secondary ms-2">
+                                    <i class="fas fa-arrow-left me-1"></i> Retour
+                                </a>
+                                <a th:href="@{'/edit'(id=${menu.id}, page=${page}, size=${size}, filtre=${filtre})}" 
+                                   class="btn btn-warning">
+                                    <i class="fas fa-edit me-1"></i> Modifier
+                                </a>
+                            </div>
+                            <button class="btn btn-danger" 
+                                    onclick="if(confirm('Voulez-vous vraiment supprimer ce menu ?')) { window.location.href=`[[@{'/menuDelete'(id=${menu.id}, page=${page}, size=${size}, filtre=${filtre})}]]`; }">
+                                <i class="fas fa-trash me-1"></i> Supprimer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        const nutritionData = {
+            labels: ['Glucides', 'Lipides', 'Protéines'],
+            datasets: [{
+                data: [
+                    /*[[${menu.totalGlucides}]]*/,
+                    /*[[${menu.totalLipides}]]*/,
+                    /*[[${menu.totalProteines}]]*/
+                ],
+                backgroundColor: [
+                    'rgba(255, 193, 7, 0.8)',  // Warning (Glucides)
+                    'rgba(23, 162, 184, 0.8)',  // Info (Lipides)
+                    'rgba(40, 167, 69, 0.8)'    // Success (Protéines)
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'doughnut',
+            data: nutritionData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Répartition des nutriments (en grammes)'
+                    }
+                }
+            }
+        };
+
+        new Chart(document.getElementById('nutritionChart'), config);
+    </script>
+</body>
+</html>
