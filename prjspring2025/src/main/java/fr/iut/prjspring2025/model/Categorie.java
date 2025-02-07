@@ -9,12 +9,11 @@ import jakarta.persistence.Table;
 /**
  * Entité représentant une catégorie de plats.
  * 
- * Cette classe est mappée sur la table "categorie" de la base de données prjspring2025.
- * Elle définit les propriétés et les méthodes pour manipuler les catégories de plats.
+ * Cette classe permet de définir les catégories prédéfinies (ex. Entrée, Plat, Dessert)
+ * auxquelles un plat peut être associé.
  */
 @Entity
 @Table(name = "categorie")
-
 public class Categorie {
 
     @Id
@@ -23,29 +22,49 @@ public class Categorie {
     
     private String nom;
 
-    // Constructeur par défaut
+    /**
+     * Constructeur par défaut.
+     */
     public Categorie() {
     }
 
-    // Constructeur avec paramètre
+    /**
+     * Constructeur avec paramètre.
+     * 
+     * @param nom le nom de la catégorie
+     */
     public Categorie(String nom) {
         this.nom = nom;
     }
 
-    // Getters et Setters
-
+    /**
+     * @return l'identifiant de la catégorie
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     * Définit l'identifiant de la catégorie.
+     * 
+     * @param id l'identifiant à définir
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * @return le nom de la catégorie
+     */
     public String getNom() {
         return nom;
     }
 
+    /**
+     * Définit le nom de la catégorie.
+     * 
+     * @param nom le nom à définir
+     */
     public void setNom(String nom) {
         this.nom = nom;
     }

@@ -31,7 +31,18 @@ public interface PlatRepository extends JpaRepository<Plat, Long> {
     @Query("SELECT p FROM Plat p WHERE p.nom LIKE :x")
     Page<Plat> rechercher(@Param("x") String mc, Pageable pageable);
 
-    // Méthode pour appliquer des filtres sur les plats
+    /**
+     * Recherche paginée des plats en appliquant divers filtres.
+     * 
+     * Filtre selon la catégorie, le nombre de calories et un mot-clé sur le nom.
+     * 
+     * @param categorieId identifiant de la catégorie (optionnel)
+     * @param minCalories calories minimales (optionnel)
+     * @param maxCalories calories maximales (optionnel)
+     * @param motCle mot-clé pour la recherche dans le nom
+     * @param pageable objet Pageable pour la pagination
+     * @return une Page de plats filtrés
+     */
     @Query("SELECT p FROM Plat p "
             + "WHERE (:categorieId IS NULL OR p.categorie.id = :categorieId) "
             + "AND (:minCalories IS NULL OR p.nbCalories >= :minCalories) "

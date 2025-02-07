@@ -19,6 +19,20 @@ import fr.iut.prjspring2025.model.Menu;
  */
 public interface MenuRepository extends JpaRepository<Menu, Long>, JpaSpecificationExecutor<Menu> {
 
+    /**
+     * Recherche les menus en appliquant différents critères de filtrage.
+     *
+     * Filtre sur le nom du menu (ou des plats associés), le prix et le total de
+     * calories.
+     *
+     * @param filtre texte à rechercher dans le nom du menu ou des plats
+     * @param prixMin prix minimal du menu
+     * @param prixMax prix maximal du menu
+     * @param calMin calories minimales totales du menu
+     * @param calMax calories maximales totales du menu
+     * @param pageable objet Pageable pour la pagination
+     * @return une Page de Menu correspondant aux critères
+     */
     @Query("SELECT DISTINCT m FROM Menu m "
             + "LEFT JOIN m.plats p "
             + "WHERE (:filtre = '' OR LOWER(m.nom) LIKE CONCAT('%', LOWER(:filtre), '%') OR LOWER(p.nom) LIKE CONCAT('%', LOWER(:filtre), '%')) "
