@@ -42,7 +42,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           tag_name: ${{ github.ref_name }}
           release_name: "Release ${{ github.ref_name }}"
@@ -52,7 +52,7 @@ jobs:
       - name: Upload du JAR vers la release
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./prjspring2025/target/prjspring2025-0.0.1-SNAPSHOT.jar
