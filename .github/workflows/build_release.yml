@@ -21,7 +21,9 @@ jobs:
 
 
       - name: Construction du JAR avec Maven
-        run: mvn clean package -DskipTests
+        run: |
+          cd prjspring2025
+          mvn clean package -DskipTests
 
   create_tag:
     runs-on: ubuntu-latest
