@@ -29,14 +29,14 @@ public class Plat {
     @Column(name = "nb_calories")
     private int nbCalories;
 
-    @Column(name = "nb_glucides")
-    private int nbGlucides;
-
     @Column(name = "nb_lipides")
     private int nbLipides;
 
     @Column(name = "nb_proteines")
     private int nbProteines;
+
+    @Column(name = "nb_glucides")
+    private int nbGlucides;
 
     @ManyToOne
     @JoinColumn(name = "categorie_id", nullable = false)

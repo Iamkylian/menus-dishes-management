@@ -8,9 +8,13 @@ import jakarta.persistence.Table;
 
 /**
  * Entité représentant une catégorie de plats.
- * 
- * Cette classe permet de définir les catégories prédéfinies (ex. Entrée, Plat, Dessert)
- * auxquelles un plat peut être associé.
+ *
+ * Cette classe permet de classifier les plats selon leur type : - Entrée - Plat
+ * principal - Dessert
+ *
+ * Elle est utilisée pour organiser et filtrer les plats dans l'application.
+ *
+ * @see Plat
  */
 @Entity
 @Table(name = "categorie")
@@ -19,7 +23,7 @@ public class Categorie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private String nom;
 
     /**
@@ -30,7 +34,7 @@ public class Categorie {
 
     /**
      * Constructeur avec paramètre.
-     * 
+     *
      * @param nom le nom de la catégorie
      */
     public Categorie(String nom) {
@@ -46,7 +50,7 @@ public class Categorie {
 
     /**
      * Définit l'identifiant de la catégorie.
-     * 
+     *
      * @param id l'identifiant à définir
      */
     public void setId(Long id) {
@@ -62,10 +66,10 @@ public class Categorie {
 
     /**
      * Définit le nom de la catégorie.
-     * 
+     *
      * @param nom le nom à définir
      */
     public void setNom(String nom) {
         this.nom = nom;
     }
-} 
+}

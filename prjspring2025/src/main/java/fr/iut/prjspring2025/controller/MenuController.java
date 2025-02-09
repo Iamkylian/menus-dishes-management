@@ -30,10 +30,14 @@ import fr.iut.prjspring2025.repository.PlatRepository;
 /**
  * Contrôleur pour l'entité Menu.
  *
- * Gère l'affichage, le filtrage, la création, l'édition et la suppression des
- * menus. Permet également d'affecter des plats à un menu lors de sa création ou
- * modification.
+ * Ce contrôleur fournit les fonctionnalités CRUD (Create, Read, Update, Delete)
+ * pour les menus, ainsi que des fonctionnalités avancées comme :
+ * - Le filtrage multicritères (nom, prix, calories)
+ * - La pagination des résultats
+ * - Le tri personnalisé
+ * - L'association de plats aux menus
  */
+
 @Controller
 public class MenuController {
 
@@ -72,8 +76,8 @@ public class MenuController {
             @RequestParam(required = false) Integer calMin,
             @RequestParam(required = false) Integer calMax,
             @RequestParam(defaultValue = "") String sort,
-            @RequestParam(name = "act", defaultValue = "") String action,
-            @RequestParam(name = "id", defaultValue = "0") Long id) {
+            @RequestParam(defaultValue = "") String action,
+            @RequestParam(defaultValue = "0") Long id) {
 
         // Définition de l'ordre de tri pour les attributs simples
         Sort sortOrder = Sort.unsorted();
@@ -139,6 +143,12 @@ public class MenuController {
      * (optionnel)
      * @param minCalories seuil de calories minimum (optionnel)
      * @param maxCalories seuil de calories maximum (optionnel)
+     * @param minLipides seuil de lipides minimum (optionnel)
+     * @param maxLipides seuil de lipides maximum (optionnel)
+     * @param minGlucides seuil de glucides minimum (optionnel)
+     * @param maxGlucides seuil de glucides maximum (optionnel)
+     * @param minProteines seuil de protéines minimum (optionnel)
+     * @param maxProteines seuil de protéines maximum (optionnel)
      * @return le nom de la vue du formulaire (menuForm)
      */
     @GetMapping("/edit")
@@ -149,7 +159,13 @@ public class MenuController {
             @RequestParam(defaultValue = "") String filtre,
             @RequestParam(required = false) Long categorieId,
             @RequestParam(required = false) Integer minCalories,
-            @RequestParam(required = false) Integer maxCalories) {
+            @RequestParam(required = false) Integer maxCalories,
+            @RequestParam(required = false) Integer minLipides,
+            @RequestParam(required = false) Integer maxLipides,
+            @RequestParam(required = false) Integer minGlucides,
+            @RequestParam(required = false) Integer maxGlucides,
+            @RequestParam(required = false) Integer minProteines,
+            @RequestParam(required = false) Integer maxProteines) {
 
         // Récupération du menu existant ou instanciation d'un nouveau menu
         if (id != 0) {
@@ -163,10 +179,18 @@ public class MenuController {
             model.addAttribute("menu", new Menu());
         }
 
-        // Récupération de la liste des plats disponibles selon le filtre
+        // Récupération de la liste des plats filtrés avec les nouveaux critères
         List<Plat> plats;
-        if (categorieId != null || minCalories != null || maxCalories != null) {
-            plats = platRepository.findFiltered(categorieId, minCalories, maxCalories, "", Pageable.unpaged()).getContent();
+        if (categorieId != null || minCalories != null || maxCalories != null
+                || minLipides != null || maxLipides != null
+                || minGlucides != null || maxGlucides != null
+                || minProteines != null || maxProteines != null) {
+            plats = platRepository.findFiltered(
+                    categorieId, minCalories, maxCalories,
+                    minLipides, maxLipides,
+                    minGlucides, maxGlucides,
+                    minProteines, maxProteines,
+                    "", Pageable.unpaged()).getContent();
         } else {
             plats = platRepository.findAll();
         }
@@ -178,26 +202,31 @@ public class MenuController {
         model.addAttribute("minCalories", minCalories);
         model.addAttribute("maxCalories", maxCalories);
         model.addAttribute("categorieId", categorieId);
+        // Ajoutez aussi les nouveaux attributs dans le modèle
+        model.addAttribute("minLipides", minLipides);
+        model.addAttribute("maxLipides", maxLipides);
+        model.addAttribute("minGlucides", minGlucides);
+        model.addAttribute("maxGlucides", maxGlucides);
+        model.addAttribute("minProteines", minProteines);
+        model.addAttribute("maxProteines", maxProteines);
 
         return "menuForm";
     }
 
     /**
-     * Enregistre un menu et affecte éventuellement une liste de plats
-     * sélectionnés.
+     * Sauvegarde un menu (création ou modification).
      *
-     * @param menu objet Menu à enregistrer
-     * @param platIds tableau des identifiants des plats affectés (optionnel)
-     * @param page numéro de la page pour redirection
-     * @param size taille de la page pour redirection
-     * @param filtre filtre actif pour le maintien du critère
-     * @param redirectAttributes attributs pour la redirection
-     * @return redirection vers la liste des menus avec les paramètres de
-     * pagination et filtre
+     * @param menu le menu à sauvegarder
+     * @param platIds liste des identifiants des plats à associer au menu
+     * @param page numéro de la page pour la redirection
+     * @param size taille de la page pour la redirection
+     * @param filtre filtre actif à conserver
+     * @param redirectAttributes attributs de redirection
+     * @return redirection vers la liste des menus avec message de confirmation
      */
     @PostMapping("/menus/save")
     public String saveMenu(Menu menu,
-            @RequestParam(required = false) Long[] platIds,
+            @RequestParam(required = false) List<Long> platIds,
             @RequestParam int page,
             @RequestParam int size,
             @RequestParam(defaultValue = "") String filtre,
@@ -222,7 +251,7 @@ public class MenuController {
         redirectAttributes.addAttribute("page", page);
         redirectAttributes.addAttribute("size", size);
         redirectAttributes.addAttribute("filtre", filtre);
-        redirectAttributes.addAttribute("act", action);
+        redirectAttributes.addAttribute("action", action);
         redirectAttributes.addAttribute("id", menu.getId());
 
         return "redirect:/menus";
@@ -250,7 +279,7 @@ public class MenuController {
         redirectAttributes.addAttribute("page", page);
         redirectAttributes.addAttribute("size", size);
         redirectAttributes.addAttribute("filtre", filtre);
-        redirectAttributes.addAttribute("act", "del");
+        redirectAttributes.addAttribute("action", "del");
 
         return "redirect:/menus";
     }

@@ -1,0 +1,30 @@
+name: Génération de la Javadoc et déploiement sur GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code du repository
+        uses: actions/checkout@v3
+
+      - name: Configuration de Java 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Construire le projet et générer la Javadoc
+        run: |
+          cd prjspring2025
+          mvn clean javadoc:javadoc
+
+      - name: Déployer la Javadoc sur GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: prjspring2025/target/site/apidocs

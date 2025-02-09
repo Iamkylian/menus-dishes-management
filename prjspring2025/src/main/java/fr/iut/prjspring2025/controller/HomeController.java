@@ -4,9 +4,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * Contrôleur pour la page d'accueil.
+ * Contrôleur de la page d'accueil de l'application.
  *
- * Gère l'affichage de la page d'accueil de l'application.
+ * Gère l'affichage de la page d'accueil qui présente les fonctionnalités
+ * principales de l'application et permet d'accéder aux différentes sections
+ * (menus et plats).
  */
 @Controller
 public class HomeController {
@@ -20,5 +22,4 @@ public class HomeController {
     public String home() {
         return "home";
     }
-
 }

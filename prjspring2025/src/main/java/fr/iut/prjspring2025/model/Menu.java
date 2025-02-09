@@ -13,12 +13,18 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 /**
- * Entité représentant un menu de plats.
+ * Entité représentant un menu du restaurant.
  *
- * Cette classe est mappée sur la table "menu" de la base de données
- * prjspring2025. Elle définit les propriétés et les méthodes pour manipuler les
- * menus de plats.
+ * Cette classe définit la structure d'un menu avec :
+ * - Ses informations de base (nom, description, prix)
+ * - La liste des plats qui le composent
+ * - Des méthodes de calcul pour les valeurs nutritionnelles totales
+ * 
+ * Elle est mappée sur la table "menu" de la base de données prjspring2025.
+ *
+ * @see Plat
  */
+
 @Entity
 @Table(name = "menu")
 public class Menu {

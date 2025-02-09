@@ -10,13 +10,19 @@ import org.springframework.data.repository.query.Param;
 import fr.iut.prjspring2025.model.Menu;
 
 /**
- * Repository pour l'entité Menu.
+ * Repository pour la gestion des menus en base de données.
  *
- * Cette interface hérite de JpaRepository et fournit ainsi toutes les
- * opérations CRUD pour manipuler les menus dans la base de données. Cela permet
- * notamment de gérer la table "menu" de la base de données prjspring2025.
+ * Cette interface étend JpaRepository et JpaSpecificationExecutor pour fournir :
+ * - Les opérations CRUD standard
+ * - Des requêtes personnalisées pour le filtrage avancé
+ * - La gestion de la pagination et du tri
  *
+ * @see Menu
+ * @see JpaRepository
+
+ * @see JpaSpecificationExecutor
  */
+
 public interface MenuRepository extends JpaRepository<Menu, Long>, JpaSpecificationExecutor<Menu> {
 
     /**

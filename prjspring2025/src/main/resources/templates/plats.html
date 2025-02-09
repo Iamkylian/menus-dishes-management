@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="~{_layout.html :: header(~{::title}, _, _)}">
     <title>Liste des Plats</title>
 </head>
+
 <body>
 
     <nav th:replace="~{_layout.html :: menu}"></nav>
+
     <div class="container py-4">
-        <!-- En-tête -->
-                <div class="alert alert-dismissible alert-success alert-floating" th:if="${action=='new' || action=='mod'}" >
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    <p th:if="${action=='new'}">
-                        Le plat <strong th:text="${plat.nom}" /> a bien été créé
-                    </p>
-                    <p th:if="${action=='mod'}">
-                        Le plat <strong th:text="${plat.nom}" /> a bien été modifié
-                    </p>
-                </div>
-                <div class="alert alert-dismissible alert-warning alert-floating" th:if="${action=='del'}" >
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    Le plat a bien été supprimé
-                </div>
+        <!-- Alertes -->
+        <div class="alert alert-dismissible alert-success" th:if="${action=='new' || action=='mod'}" >
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <p th:if="${action=='new'}">
+                Le plat <strong th:text="${plat.nom}" /> a bien été créé
+            </p>
+            <p th:if="${action=='mod'}">
+                Le plat <strong th:text="${plat.nom}" /> a bien été modifié
+            </p>
+        </div>
+        <div class="alert alert-dismissible alert-warning" th:if="${action=='del'}" >
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            Le plat a bien été supprimé
+        </div>
         <div class="row mb-4">
             <div class="col">
                 <h1 class="text-primary text-center">Les Plats</h1>
@@ -31,7 +34,7 @@
         <!-- Bouton Nouveau Plat -->
         <div class="row mb-4">
             <div class="col text-center">
-                <a th:href="@{'/platEdit'(page=${page.number}, size=${page.size}, mc=${motCle})}" class="btn btn-success">
+                <a th:href="@{'/platEdit'(page=${page.number}, size=${page.size}, motCle=${motCle})}" class="btn btn-success">
                     <i class="fas fa-plus"></i> Nouveau Plat
                 </a>
             </div>
@@ -41,31 +44,62 @@
         <div class="row mb-4">
             <div class="col-md-10 mx-auto">
                 <form th:action="@{/plats}" method="get">
+                    <!-- Première ligne : Recherche et Catégorie -->
                     <div class="row g-3 align-items-end">
-                        <div class="col-md-3">
-                            <label for="mc" class="form-label">Recherche</label>
-                            <input type="text" id="mc" name="motCle" class="form-control" placeholder="Nom du plat" th:value="${motCle}">
+                        <div class="col-md-6">
+                            <label for="motCle" class="form-label">Recherche</label>
+                            <input type="text" id="motCle" name="motCle" class="form-control" placeholder="Nom du plat" th:value="${motCle}">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <label for="categorieId" class="form-label">Catégorie</label>
                             <select id="categorieId" name="categorieId" class="form-select">
                                 <option value="">-- Toutes --</option>
                                 <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.nom}" th:selected="${cat.id} == ${categorieId}"></option>
                             </select>
                         </div>
-                        <div class="col-md-2">
-                            <label for="minCalories" class="form-label">Calories min</label>
-                            <input type="number" id="minCalories" name="minCalories" class="form-control" th:value="${minCalories}">
+                    </div>
+                    
+                    <!-- Deuxième ligne : Filtres numériques -->
+                    <div class="row g-3 align-items-end mt-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Calories</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" name="minCalories" placeholder="Min" th:value="${minCalories}" min="0">
+                                <span class="input-group-text">-</span>
+                                <input type="number" class="form-control" name="maxCalories" placeholder="Max" th:value="${maxCalories}" min="0">
+                            </div>
                         </div>
-                        <div class="col-md-2">
-                            <label for="maxCalories" class="form-label">Calories max</label>
-                            <input type="number" id="maxCalories" name="maxCalories" class="form-control" th:value="${maxCalories}">
+                        <div class="col-md-3">
+                            <label class="form-label">Lipides</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" name="minLipides" placeholder="Min" th:value="${minLipides}" min="0">
+                                <span class="input-group-text">-</span>
+                                <input type="number" class="form-control" name="maxLipides" placeholder="Max" th:value="${maxLipides}" min="0">
+                            </div>
                         </div>
-                        <div class="col-md-12 d-flex justify-content-end">
+                        <div class="col-md-3">
+                            <label class="form-label">Glucides</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" name="minGlucides" placeholder="Min" th:value="${minGlucides}" min="0">
+                                <span class="input-group-text">-</span>
+                                <input type="number" class="form-control" name="maxGlucides" placeholder="Max" th:value="${maxGlucides}" min="0">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Protéines</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" name="minProteines" placeholder="Min" th:value="${minProteines}" min="0">
+                                <span class="input-group-text">-</span>
+                                <input type="number" class="form-control" name="maxProteines" placeholder="Max" th:value="${maxProteines}" min="0">
+                            </div>
+                        </div>
+                        <!-- Boutons de soumission -->
+                        <div class="col-12 text-end mt-2">
                             <button type="submit" class="btn btn-primary">Filtrer</button>
                             <a th:href="@{/plats}" class="btn btn-secondary ms-2">Réinitialiser</a>
                         </div>
                     </div>
+                    
                     <input type="hidden" name="page" th:value="${page.number}">
                     <input type="hidden" name="size" th:value="${page.size}">
                 </form>
@@ -78,9 +112,17 @@
                 <table class="table table-hover">
                     <thead class="table-primary">
                         <tr>
-                            <th>#</th>
+                            <th>Id</th>
                             <th>
-                                <a th:href="@{/plats(page=${page.number}, size=${page.size}, motCle=${motCle}, categorieId=${categorieId}, minCalories=${minCalories}, maxCalories=${maxCalories}, sort=${sort=='nomAsc' ? 'nomDesc' : 'nomAsc'})}" class="text-white text-decoration-none">
+                                <a th:href="@{/plats(
+                                        page=${page.number}, 
+                                        size=${page.size}, 
+                                        motCle=${motCle}, 
+                                        categorieId=${categorieId}, 
+                                        minCalories=${minCalories}, 
+                                        maxCalories=${maxCalories}, 
+                                        sort=${sort=='nomAsc' ? 'nomDesc' : 'nomAsc'})}" 
+                                   class="text-white text-decoration-none">
                                     Nom
                                     <i th:if="${sort == 'nomAsc'}" class="fas fa-sort-up"></i>
                                     <i th:if="${sort == 'nomDesc'}" class="fas fa-sort-down"></i>
@@ -88,7 +130,15 @@
                                 </a>
                             </th>
                             <th>
-                                <a th:href="@{/plats(page=${page.number}, size=${page.size}, motCle=${motCle}, categorieId=${categorieId}, minCalories=${minCalories}, maxCalories=${maxCalories}, sort=${sort=='catAsc' ? 'catDesc' : 'catAsc'})}" class="text-white text-decoration-none">
+                                <a th:href="@{/plats(
+                                        page=${page.number}, 
+                                        size=${page.size}, 
+                                        motCle=${motCle}, 
+                                        categorieId=${categorieId}, 
+                                        minCalories=${minCalories}, 
+                                        maxCalories=${maxCalories}, 
+                                        sort=${sort=='catAsc' ? 'catDesc' : 'catAsc'})}" 
+                                   class="text-white text-decoration-none">
                                     Catégorie
                                     <i th:if="${sort == 'catAsc'}" class="fas fa-sort-up"></i>
                                     <i th:if="${sort == 'catDesc'}" class="fas fa-sort-down"></i>
@@ -96,11 +146,67 @@
                                 </a>
                             </th>
                             <th>
-                                <a th:href="@{/plats(page=${page.number}, size=${page.size}, motCle=${motCle}, categorieId=${categorieId}, minCalories=${minCalories}, maxCalories=${maxCalories}, sort=${sort=='calAsc' ? 'calDesc' : 'calAsc'})}" class="text-white text-decoration-none">
+                                <a th:href="@{/plats(
+                                        page=${page.number}, 
+                                        size=${page.size}, 
+                                        motCle=${motCle}, 
+                                        categorieId=${categorieId}, 
+                                        minCalories=${minCalories}, 
+                                        maxCalories=${maxCalories}, 
+                                        sort=${sort=='calAsc' ? 'calDesc' : 'calAsc'})}" 
+                                   class="text-white text-decoration-none">
                                     Calories
                                     <i th:if="${sort == 'calAsc'}" class="fas fa-sort-up"></i>
                                     <i th:if="${sort == 'calDesc'}" class="fas fa-sort-down"></i>
                                     <i th:if="${sort != 'calAsc' and sort != 'calDesc'}" class="fas fa-sort"></i>
+                                </a>
+                            </th>
+                            <th>
+                                <a th:href="@{/plats(
+                                        page=${page.number}, 
+                                        size=${page.size}, 
+                                        motCle=${motCle}, 
+                                        categorieId=${categorieId}, 
+                                        minGlucides=${minGlucides}, 
+                                        maxGlucides=${maxGlucides}, 
+                                        sort=${sort=='glucidesAsc' ? 'glucidesDesc' : 'glucidesAsc'})}" 
+                                   class="text-white text-decoration-none">
+                                    Glucides
+                                    <i th:if="${sort == 'glucidesAsc'}" class="fas fa-sort-up"></i>
+                                    <i th:if="${sort == 'glucidesDesc'}" class="fas fa-sort-down"></i>
+                                    <i th:if="${sort != 'glucidesAsc' and sort != 'glucidesDesc'}" class="fas fa-sort"></i>
+                                </a>
+                            </th>
+                            <th>
+                                <a th:href="@{/plats(
+                                        page=${page.number}, 
+                                        size=${page.size}, 
+                                        motCle=${motCle}, 
+                                        categorieId=${categorieId}, 
+                                        minLipides=${minLipides}, 
+                                        maxLipides=${maxLipides}, 
+                                        sort=${sort=='lipidesAsc' ? 'lipidesDesc' : 'lipidesAsc'})}" 
+                                   class="text-white text-decoration-none">
+                                    Lipides
+                                    <i th:if="${sort == 'lipidesAsc'}" class="fas fa-sort-up"></i>
+                                    <i th:if="${sort == 'lipidesDesc'}" class="fas fa-sort-down"></i>
+                                    <i th:if="${sort != 'lipidesAsc' and sort != 'lipidesDesc'}" class="fas fa-sort"></i>
+                                </a>
+                            </th>
+                            <th>
+                                <a th:href="@{/plats(
+                                        page=${page.number}, 
+                                        size=${page.size}, 
+                                        motCle=${motCle}, 
+                                        categorieId=${categorieId}, 
+                                        minProteines=${minProteines}, 
+                                        maxProteines=${maxProteines}, 
+                                        sort=${sort=='proteinesAsc' ? 'proteinesDesc' : 'proteinesAsc'})}" 
+                                   class="text-white text-decoration-none">
+                                    Protéines
+                                    <i th:if="${sort == 'proteinesAsc'}" class="fas fa-sort-up"></i>
+                                    <i th:if="${sort == 'proteinesDesc'}" class="fas fa-sort-down"></i>
+                                    <i th:if="${sort != 'proteinesAsc' and sort != 'proteinesDesc'}" class="fas fa-sort"></i>
                                 </a>
                             </th>
                             <th>Actions</th>
@@ -112,19 +218,15 @@
                             <td th:text="${plat.nom}">Nom du plat</td>
                             <td th:text="${plat.categorie.nom}">Catégorie</td>
                             <td th:text="${plat.nbCalories}">0</td>
+                            <td th:text="${plat.nbGlucides}">0</td>
+                            <td th:text="${plat.nbLipides}">0</td>
+                            <td th:text="${plat.nbProteines}">0</td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <a class="btn btn-warning btn-sm" th:href="@{'/platEdit'(id=${plat.id}, page=${page.number}, size=${page.size}, mc=${motCle})}">
+                                    <a class="btn btn-warning btn-sm" th:href="@{'/platEdit'(id=${plat.id}, page=${page.number}, size=${page.size}, motCle=${motCle})}">
                                         <i class="fas fa-edit"></i> Éditer
                                     </a>
-
-                                    <a class="btn btn-danger btn-sm" 
-                                       th:href="@{'/platDelete'(id=${plat.id}, page=${page.number}, size=${page.size}, motCle=${motCle}, categorieId=${categorieId}, minCalories=${minCalories}, maxCalories=${maxCalories})}" 
-                                       onclick="return confirm('Voulez-vous vraiment supprimer ce plat ?');">
-                                        <i class="fas fa-trash"></i> Supprimer
-                                    </a>
-
-                                    <a class="btn btn-info btn-sm" th:href="@{'/platDetail/' + ${plat.id}(page=${page.number}, size=${page.size}, mc=${motCle})}">
+                                    <a class="btn btn-info btn-sm" th:href="@{'/platDetail/' + ${plat.id}(page=${page.number}, size=${page.size}, motCle=${motCle})}">
                                         <i class="fas fa-eye"></i> Détails
                                     </a>
                                 </div>

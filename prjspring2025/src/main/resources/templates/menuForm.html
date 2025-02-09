@@ -19,7 +19,7 @@
                         <h4 class="mb-0">Filtres des plats</h4>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/edit}" method="get">
+                        <form th:action="@{/edit#availablePlatsList}" method="get">
                             <input type="hidden" name="id" th:value="${menu.id != null ? menu.id : 0}">
                             <input type="hidden" name="page" th:value="${page}">
                             <input type="hidden" name="size" th:value="${size}">
@@ -47,11 +47,39 @@
                                 </div>
                             </div>
                             <div class="row mt-3">
+                                <div class="col-md-4">
+                                    <label for="minLipides" class="form-label">Lipides min</label>
+                                    <input type="number" id="minLipides" name="minLipides" class="form-control" th:value="${minLipides}" min="0">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="maxLipides" class="form-label">Lipides max</label>
+                                    <input type="number" id="maxLipides" name="maxLipides" class="form-control" th:value="${maxLipides}" min="0">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="minGlucides" class="form-label">Glucides min</label>
+                                    <input type="number" id="minGlucides" name="minGlucides" class="form-control" th:value="${minGlucides}" min="0">
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-4">
+                                    <label for="maxGlucides" class="form-label">Glucides max</label>
+                                    <input type="number" id="maxGlucides" name="maxGlucides" class="form-control" th:value="${maxGlucides}" min="0">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="minProteines" class="form-label">Protéines min</label>
+                                    <input type="number" id="minProteines" name="minProteines" class="form-control" th:value="${minProteines}" min="0">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="maxProteines" class="form-label">Protéines max</label>
+                                    <input type="number" id="maxProteines" name="maxProteines" class="form-control" th:value="${maxProteines}" min="0">
+                                </div>
+                            </div>
+                            <div class="row mt-3">
                                 <div class="col-md-6">
                                     <button type="submit" class="btn btn-primary w-100">Filtrer les plats</button>
                                 </div>
                                 <div class="col-md-6">
-                                    <a th:href="@{/edit(id=${menu.id != null ? menu.id : 0}, page=${page}, size=${size}, filtre='', categorieId='', minCalories='', maxCalories='')}" class="btn btn-secondary w-100">Réinitialiser filtre</a>
+                                    <a th:href="@{/edit(id=${menu.id != null ? menu.id : 0}, page=${page}, size=${size}, filtre='', categorieId='', minCalories='', maxCalories='', minLipides='', maxLipides='', minGlucides='', maxGlucides='', minProteines='', maxProteines='')}" class="btn btn-secondary w-100">Réinitialiser filtre</a>
                                 </div>
                             </div>
                         </form>
@@ -155,12 +183,24 @@
                     <div class="form-group mt-3">
                         <button type="submit" class="btn btn-primary">Enregistrer</button>
                         <a th:href="@{'/menus'(page=${page}, size=${size}, filtre=${filtre})}" class="btn btn-secondary">Annuler</a>
+                        <a th:if="${menu.id != null and menu.id > 0}"
+                           th:href="@{'/menus/delete'(id=${menu.id}, page=${page}, size=${size}, filtre=${filtre})}"
+                           class="btn btn-danger"
+                           onclick="return confirm('Voulez-vous vraiment supprimer ce menu ?');">
+                           Supprimer
+                        </a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
     <script>
+        /**
+         * Met à jour les totaux nutritionnels du menu.
+         * 
+         * Calcule et affiche les totaux des calories, glucides, lipides et protéines
+         * en fonction des plats sélectionnés dans le menu.
+         */
         function updateTotals() {
             var selectedItems = document.querySelectorAll('#selectedPlatsList .list-group-item');
             var totalPlats = selectedItems.length;
@@ -178,6 +218,12 @@
             updateHiddenInputs();
         }
 
+        /**
+         * Met à jour les champs cachés pour les plats sélectionnés.
+         * 
+         * Crée des inputs cachés pour chaque plat sélectionné afin de les
+         * transmettre lors de la soumission du formulaire.
+         */
         function updateHiddenInputs() {
             var container = document.getElementById('hiddenPlatInputs');
             container.innerHTML = '';
@@ -192,6 +238,11 @@
             });
         }
 
+        /**
+         * Ajoute un plat à la liste des plats sélectionnés.
+         * 
+         * @param {HTMLElement} button - Le bouton d'ajout cliqué
+         */
         function ajouterPlat(button) {
             var item = button.closest('.list-group-item');
             button.classList.remove('btn-outline-primary');
@@ -203,6 +254,11 @@
             updateTotals();
         }
 
+        /**
+         * Retire un plat de la liste des plats sélectionnés.
+         * 
+         * @param {HTMLElement} button - Le bouton de retrait cliqué
+         */
         function retirerPlat(button) {
             var item = button.closest('.list-group-item');
             button.classList.remove('btn-outline-danger');
@@ -214,6 +270,11 @@
             updateTotals();
         }
 
+        /**
+         * Valide la sélection des plats avant soumission du formulaire.
+         * 
+         * @returns {boolean} true si au moins un plat est sélectionné, false sinon
+         */
         function validateMenuSelection() {
             var selectedItems = document.querySelectorAll('#selectedPlatsList .list-group-item');
             if (selectedItems.length === 0) {
@@ -223,8 +284,15 @@
             return true;
         }
 
+        // Initialisation des totaux au chargement de la page
         window.addEventListener('DOMContentLoaded', function() {
             updateTotals();
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if (window.location.hash === "#availablePlatsList") {
+                document.getElementById("availablePlatsList").scrollIntoView();
+            }
         });
     </script>
 </body>
