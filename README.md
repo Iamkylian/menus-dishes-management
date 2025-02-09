@@ -66,7 +66,7 @@ L'application permet de créer, modifier, supprimer et afficher des menus et des
     - **Tri par prix** : les menus peuvent être triés par prix, du plus cher au moins cher et inversement.
     - **Tri par nombre de calories total** : les menus peuvent être triés par nombre de calories total, du plus élevé au plus faible et inversement.
 
-- **Alerte** :
+- **Alertes** :
   - **Création d'un menu et/ou d'un plat** : une alerte est affichée pour informer l'utilisateur que le menu ou le plat a été créé avec succès.
   - **Modification d'un menu et/ou d'un plat** : une alerte est affichée pour informer l'utilisateur que le menu ou le plat a été modifié avec succès.
   - **Suppression d'un menu et/ou d'un plat** : une alerte est affichée pour informer l'utilisateur que le menu ou le plat a été supprimé avec succès.
