@@ -44,7 +44,7 @@ L'application permet de créer, modifier, supprimer et afficher des menus et des
     - **Sélection de plats** : lors de la constitution d'un menu, l'utilisateur peut sélectionner les plats qu'il souhaite ajouter à son menu.
       - **Intégrer un système de filtres** lors de la sélection des plats :
         - Filtrage par catégorie.
-        - Filtrage par nombre de calories (minimum, maximum).
+        - Filtrage par nombre de calories (minimum, maximum), de lipides (minimum, maximum), de glucides (minimum, maximum) et de protéines (minimum, maximum).
 
 ## Fonctionnalités demandées mais non implémentées
 
