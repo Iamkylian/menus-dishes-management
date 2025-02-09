@@ -16,7 +16,7 @@
 
 ## Présentation du projet
 Le projet **Gestion de Menus et Plats** est une application web développée avec Spring Boot, conçue pour faciliter la gestion des menus et des plats d'un restaurant. En s'appuyant sur le modèle MVC, l'application intègre les technologies suivantes :
-- **Spring MVC** pour le traitement des requêtes HTTP et la navigation entre les vues.
+- **Spring MVC** qui est un framework basé sur Spring et qui permet de gérer les requêtes HTTP et la navigation entre les vues.
 - **Thymeleaf** pour la génération dynamique des pages HTML.
 - **Spring Data JPA** pour la persistance des données.
 - **MariaDB** (ou MySQL) pour la gestion de la base de données.

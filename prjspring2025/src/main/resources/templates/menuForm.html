@@ -184,7 +184,7 @@
                         <button type="submit" class="btn btn-primary">Enregistrer</button>
                         <a th:href="@{'/menus'(page=${page}, size=${size}, filtre=${filtre})}" class="btn btn-secondary">Annuler</a>
                         <a th:if="${menu.id != null and menu.id > 0}"
-                           th:href="@{'/menus/delete'(id=${menu.id}, page=${page}, size=${size}, filtre=${filtre})}"
+                           th:href="@{'/menuDelete'(id=${menu.id}, page=${page}, size=${size}, filtre=${filtre})}"
                            class="btn btn-danger"
                            onclick="return confirm('Voulez-vous vraiment supprimer ce menu ?');">
                            Supprimer

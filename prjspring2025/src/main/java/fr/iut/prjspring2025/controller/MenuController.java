@@ -16,8 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -31,13 +29,10 @@ import fr.iut.prjspring2025.repository.PlatRepository;
  * Contrôleur pour l'entité Menu.
  *
  * Ce contrôleur fournit les fonctionnalités CRUD (Create, Read, Update, Delete)
- * pour les menus, ainsi que des fonctionnalités avancées comme :
- * - Le filtrage multicritères (nom, prix, calories)
- * - La pagination des résultats
- * - Le tri personnalisé
- * - L'association de plats aux menus
+ * pour les menus, ainsi que des fonctionnalités avancées comme : - Le filtrage
+ * multicritères (nom, prix, calories) - La pagination des résultats - Le tri
+ * personnalisé - L'association de plats aux menus
  */
-
 @Controller
 public class MenuController {
 
@@ -69,7 +64,7 @@ public class MenuController {
     @GetMapping("/menus")
     public String listMenus(Model model,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "") String filtre,
             @RequestParam(required = false) Double prixMin,
             @RequestParam(required = false) Double prixMax,
@@ -155,7 +150,7 @@ public class MenuController {
     public String editMenu(Model model,
             @RequestParam(defaultValue = "0") Long id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "") String filtre,
             @RequestParam(required = false) Long categorieId,
             @RequestParam(required = false) Integer minCalories,
@@ -227,8 +222,8 @@ public class MenuController {
     @PostMapping("/menus/save")
     public String saveMenu(Menu menu,
             @RequestParam(required = false) List<Long> platIds,
-            @RequestParam int page,
-            @RequestParam int size,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "") String filtre,
             RedirectAttributes redirectAttributes) {
 
@@ -267,10 +262,10 @@ public class MenuController {
      * @param redirectAttributes attributs pour la redirection
      * @return redirection vers la liste des menus après suppression
      */
-    @RequestMapping(value = "/menus/delete", method = RequestMethod.GET)
+    @GetMapping("/menuDelete")
     public String deleteMenu(@RequestParam Long id,
-            @RequestParam int page,
-            @RequestParam int size,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "") String filtre,
             RedirectAttributes redirectAttributes) {
 

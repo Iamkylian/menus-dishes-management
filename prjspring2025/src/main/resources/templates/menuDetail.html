@@ -1,8 +1,20 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{_layout.html :: header(~{::title},_,_)}">
+<head th:replace="~{_layout.html :: header(~{::title},_,~{::script})}">
     <title th:text="${menu.nom}">Détail du Menu</title>
+    <th:block th:fragment="script">
+        <script th:inline="javascript">
+            function confDelMenu(e) {
+                if (!confirm("Voulez-vous vraiment supprimer ce menu ?")) {
+                    e.preventDefault();
+                    return false;
+                }
+                return true;
+            }
+        </script>
+    </th:block>
 </head>
+
 <body>
     <nav th:replace="~{_layout.html :: menu}"></nav>
     <div class="container py-4">
@@ -135,13 +147,14 @@
                                     <i class="fas fa-edit me-1"></i> Modifier
                                 </a>
                             </div>
-                            <button class="btn btn-danger" 
-                                    onclick="if(confirm('Voulez-vous vraiment supprimer ce menu ?')) { window.location.href=`[[@{'/menuDelete'(id=${menu.id}, page=${page}, size=${size}, filtre=${filtre})}]]`; }">
+                            <a onclick="confDelMenu(event)" th:href="@{'/menuDelete'(id=${menu.id}, page=${page}, size=${size}, filtre=${filtre})}" 
+                                   class="btn btn-danger">
                                 <i class="fas fa-trash me-1"></i> Supprimer
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -149,41 +162,46 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script th:inline="javascript">
-        const nutritionData = {
-            labels: ['Glucides', 'Lipides', 'Protéines'],
-            datasets: [{
-                data: [
-                    /*[[${menu.totalGlucides}]]*/,
-                    /*[[${menu.totalLipides}]]*/,
-                    /*[[${menu.totalProteines}]]*/
-                ],
-                backgroundColor: [
-                    'rgba(255, 193, 7, 0.8)',  // Warning (Glucides)
-                    'rgba(23, 162, 184, 0.8)',  // Info (Lipides)
-                    'rgba(40, 167, 69, 0.8)'    // Success (Protéines)
-                ],
-                borderWidth: 1
-            }]
-        };
+        (function(){
+            const nutritionData = {
+                labels: ['Glucides', 'Lipides', 'Protéines'],
+                datasets: [{
+                    data: [
+                        /*[[${menu.totalGlucides}]]*/,
+                        /*[[${menu.totalLipides}]]*/,
+                        /*[[${menu.totalProteines}]]*/
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 193, 7, 0.8)',  // Warning (Glucides)
+                        'rgba(23, 162, 184, 0.8)',  // Info (Lipides)
+                        'rgba(40, 167, 69, 0.8)'    // Success (Protéines)
+                    ],
+                    borderWidth: 1
+                }]
+            };
 
-        const config = {
-            type: 'doughnut',
-            data: nutritionData,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    },
-                    title: {
-                        display: true,
-                        text: 'Répartition des nutriments (en grammes)'
+            const config = {
+                type: 'doughnut',
+                data: nutritionData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Répartition des nutriments (en grammes)'
+                        }
                     }
                 }
-            }
-        };
+            };
 
-        new Chart(document.getElementById('nutritionChart'), config);
+            const ctx = document.getElementById('nutritionChart');
+            if (ctx) {
+                new Chart(ctx, config);
+            }
+        })();
     </script>
 </body>
 </html>
